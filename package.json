@@ -1,0 +1,24 @@
+{
+  "name": "socketlife",
+  "version": "1.0.0",
+  "description": "��S\u0000o\u0000c\u0000k\u0000e\u0000t\u0000L\u0000i\u0000f\u0000e\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johngalarza/SocketLife.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/johngalarza/SocketLife/issues"
+  },
+  "homepage": "https://github.com/johngalarza/SocketLife#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}
