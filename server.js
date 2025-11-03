@@ -7,14 +7,35 @@ const port = 3000;
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+let players = {};
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket)=>{
     console.log('Player connected', socket.id);
+     players[socket.id] = {
+        x: 0,
+        y: 0,
+        rotation: 0,
+    };
+    socket.emit('currentPlayers', players);
 
-    socket.on('move', (player)=>{
-        console.log('Jugador', player)
+    socket.broadcast.emit('newPlayer', { id: socket.id, ...players[socket.id] });
+
+    socket.on('move', (data)=>{
+        if (players[socket.id]) {
+            console.log('Jugador',socket.id,':',players[socket.id]);
+            players[socket.id].x = data.x;
+            players[socket.id].y = data.y;
+            players[socket.id].rotation = data.rotation;
+
+            socket.broadcast.emit('enemyMoved', { id: socket.id, ...data });
+        }
+    });
+
+    socket.on('disconnect',()=>{
+        delete players[socket.id];
+        socket.broadcast.emit('enemyDisconnect', socket.id);
     })
 })
 

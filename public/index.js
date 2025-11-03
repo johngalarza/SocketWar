@@ -4,6 +4,8 @@ const socket = io();
 const app = new Application();
 const container = new Container();
 let player;
+let enemys = {};
+let myId;
 
 async function main(){
     await render2D();
@@ -17,7 +19,7 @@ async function render2D(){
 }
 
 async function renderScenery() {
-    await app.init({ background: '#999', resizeTo: window });
+    await app.init({ background: '#bbb', resizeTo: window });
     document.body.appendChild(app.canvas);
     app.stage.addChild(container);
 }
@@ -62,5 +64,55 @@ function sendStatus(){
         rotation: player.rotation
     })
 }
+
+socket.on('connect', async () => {
+    myId = socket.id;
+});
+
+socket.on('currentPlayers', async (players)=>{
+    console.log(players)
+    for(let id in players){
+        if(id !== myId){
+            const texture = await Assets.load('./assets/tank.png');
+            enemys[id] = new Sprite({
+                texture: texture,
+                anchor: 0.5,
+                x: app.screen.width/2,
+                y: app.screen.height/2,
+                tint: 0xff6666
+            });
+            container.addChild(enemys[id]);
+        }
+    }
+});
+
+socket.on('newPlayer', async (data) => {
+    const texture = await Assets.load('./assets/tank.png');
+    enemys[data.id] = new Sprite({
+        texture,
+        anchor: 0.5,
+        x: data.x,
+        y: data.y,
+        rotation: data.rotation,
+        tint: 0xff6666
+    });
+    container.addChild(enemys[data.id]);
+    console.log('Nuevo jugador conectado:', data.id);
+});
+
+socket.on('enemyMoved', async (data)=>{
+    const { id, x, y, rotation } = data;
+    if(enemys[id]){
+        enemys[id].x = x;
+        enemys[id].y = y;
+        enemys[id].rotation = rotation;
+    }
+});
+
+socket.on('enemyDisconnect', (id)=>{
+    container.removeChild(enemys[id]);
+    enemys[id].destroy;
+    delete enemys[id];
+});
 
 main();
