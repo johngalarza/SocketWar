@@ -77,8 +77,9 @@ socket.on('currentPlayers', async (players)=>{
             enemys[id] = new Sprite({
                 texture: texture,
                 anchor: 0.5,
-                x: app.screen.width/2,
-                y: app.screen.height/2,
+                x: players[id].x,
+                y: players[id].y,
+                rotation: players[id].rotation,
                 tint: 0xff6666
             });
             container.addChild(enemys[id]);
